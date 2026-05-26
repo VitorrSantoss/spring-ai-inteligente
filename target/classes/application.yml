@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: budget-ai-api
+
+  # ========== PERSISTÊNCIA: PostgreSQL via Docker ==========
+  datasource:
+    url: jdbc:postgresql://localhost:5432/budgetdb
+    username: budget
+    password: budget123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # ========== SPRING AI - OpenAI ==========
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:sua-chave-aqui}
+      # ChatModel - GPT para conversação e tool calling
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.7
+      # Transcription - Whisper (áudio → texto)
+      audio:
+        transcription:
+          options:
+            model: whisper-1
+            response-format: text
+            language: pt
+        # Speech - TTS (texto → áudio)
+        speech:
+          options:
+            model: tts-1
+            voice: nova
+            response-format: mp3
+            speed: 1.0
+
+  # Upload de áudio
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
+server:
+  port: 8080
+
+# Swagger / OpenAPI
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+# Logs
+logging:
+  level:
+    com.nttdata.budgetai: INFO
+    org.springframework.ai: INFO
