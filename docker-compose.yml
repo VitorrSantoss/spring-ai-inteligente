@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: budget-ai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: budgetdb
+      POSTGRES_USER: budget
+      POSTGRES_PASSWORD: budget123
+    ports:
+      - "5432:5432"
+    volumes:
+      - budget_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U budget -d budgetdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Opcional: pgAdmin para visualizar o banco no navegador
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: budget-ai-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@nttdata.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+volumes:
+  budget_pgdata:
